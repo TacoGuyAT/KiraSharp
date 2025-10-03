@@ -1,0 +1,16 @@
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[package]
+name = "kira_ffi"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+csbindgen = ["dep:csbindgen"]
+
+[dependencies]
+kira = { version = "0.9.6" }
+
+[build-dependencies]
+csbindgen = { version = "1.9.3", optional = true }
