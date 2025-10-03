@@ -1,5 +1,5 @@
 ﻿namespace KiraSharp;
 public struct TrackRoute {
-    public unsafe void* TrackID;
-    public double Volume;
+    public unsafe void* TrackID { get; internal set; }
+    public double Volume { get; set; }
 }
