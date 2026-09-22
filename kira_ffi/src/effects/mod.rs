@@ -1,9 +1,11 @@
 use std::ffi::c_void;
 use kira::effect::Effect;
 
+pub mod managed_effect;
 pub mod reverb_builder;
 pub mod reverb_handle;
 
+pub use managed_effect::*;
 pub use reverb_builder::*;
 pub use reverb_handle::*;
 
