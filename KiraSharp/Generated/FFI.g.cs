@@ -133,6 +133,118 @@ namespace KiraSharp.Generated
         [DllImport(__DllName, EntryPoint = "static_sound_handle_set_volume", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern void static_sound_handle_set_volume(void* static_sound_handle_ptr, void* volume_ptr, void* tween_ptr);
 
+        /// <summary>
+        ///  Panning: 0.0 = hard left, 0.5 = center, 1.0 = hard right. Smoothly
+        ///  interpolated by the given tween.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "static_sound_handle_set_panning", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void static_sound_handle_set_panning(void* static_sound_handle_ptr, double panning, void* tween_ptr);
+
+        /// <summary>
+        ///  Plays a streaming sound backed by a C# stream on the main track. Returns a
+        ///  `StreamingSoundHandle`, or null if the format could not be determined. On any
+        ///  outcome the source is consumed and the `destroy` callback eventually runs.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "streaming_stream_play", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void* streaming_stream_play(void* audio_manager_ptr, void* user_data, delegate* unmanaged[Cdecl]<void*, byte*, nuint, nuint> read, delegate* unmanaged[Cdecl]<void*, long, int, long> seek, delegate* unmanaged[Cdecl]<void*, void> destroy, ulong total_len);
+
+        /// <summary>
+        ///  Plays a streaming sound backed by a C# stream, routed to the given sub-track.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "streaming_stream_play_on_track", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void* streaming_stream_play_on_track(void* audio_manager_ptr, void* user_data, delegate* unmanaged[Cdecl]<void*, byte*, nuint, nuint> read, delegate* unmanaged[Cdecl]<void*, long, int, long> seek, delegate* unmanaged[Cdecl]<void*, void> destroy, ulong total_len, void* track_handle_ptr);
+
+        [DllImport(__DllName, EntryPoint = "destroy_streaming_sound_handle", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void destroy_streaming_sound_handle(void* handle_ptr);
+
+        [DllImport(__DllName, EntryPoint = "streaming_sound_handle_resume", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void streaming_sound_handle_resume(void* handle_ptr, void* tween_ptr);
+
+        [DllImport(__DllName, EntryPoint = "streaming_sound_handle_pause", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void streaming_sound_handle_pause(void* handle_ptr, void* tween_ptr);
+
+        [DllImport(__DllName, EntryPoint = "streaming_sound_handle_stop", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void streaming_sound_handle_stop(void* handle_ptr, void* tween_ptr);
+
+        [DllImport(__DllName, EntryPoint = "streaming_sound_handle_set_volume", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void streaming_sound_handle_set_volume(void* handle_ptr, void* volume_ptr, void* tween_ptr);
+
+        /// <summary>
+        ///  Panning: 0.0 = hard left, 0.5 = center, 1.0 = hard right. Smoothly
+        ///  interpolated by the given tween.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "streaming_sound_handle_set_panning", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void streaming_sound_handle_set_panning(void* handle_ptr, double panning, void* tween_ptr);
+
+        /// <summary>
+        ///  Loops the whole sound. Requires a seekable decoder (the encoded path is;
+        ///  the live PCM path is not).
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "streaming_sound_handle_set_loop", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void streaming_sound_handle_set_loop(void* handle_ptr);
+
+        /// <summary>
+        ///  Loops the region between `start` and `end` (in seconds).
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "streaming_sound_handle_set_loop_bounded", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void streaming_sound_handle_set_loop_bounded(void* handle_ptr, double start, double end);
+
+        /// <summary>
+        ///  Creates a streaming PCM source. `total_frames` is the exact number of stereo
+        ///  frames the caller will push (kira needs the length up front). `capacity_frames`
+        ///  bounds the ring buffer; the producer should keep it filled ahead of playback.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "pcm_stream_create", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void* pcm_stream_create(uint sample_rate, nuint total_frames, nuint capacity_frames);
+
+        /// <summary>
+        ///  Pushes up to `frame_count` interleaved-stereo frames (`samples` length must be
+        ///  `frame_count * 2`). Returns the number of frames actually written; the caller
+        ///  should retry the remainder if the ring was full.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "pcm_stream_write", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern nuint pcm_stream_write(void* stream_ptr, float* samples, nuint frame_count);
+
+        /// <summary>
+        ///  Signals that no more frames will be pushed.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "pcm_stream_finish", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void pcm_stream_finish(void* stream_ptr);
+
+        /// <summary>
+        ///  Plays the stream on the main track. Returns a `StreamingSoundHandle`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "pcm_stream_play", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void* pcm_stream_play(void* audio_manager_ptr, void* stream_ptr);
+
+        /// <summary>
+        ///  Plays the stream routed to the given sub-track. Returns a `StreamingSoundHandle`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "pcm_stream_play_on_track", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void* pcm_stream_play_on_track(void* audio_manager_ptr, void* stream_ptr, void* track_handle_ptr);
+
+        /// <summary>
+        ///  Frees the stream handle (and its producer). The played sound keeps the
+        ///  consumer side alive independently.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "destroy_pcm_stream", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void destroy_pcm_stream(void* stream_ptr);
+
+        /// <summary>
+        ///  Destroys a `CEffect` that was built (via `*_build`) but never attached to a
+        ///  track. Frees both the boxed effect and its associated handle.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "destroy_ceffect", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void destroy_ceffect(void* ceffect_ptr);
+
+        /// <summary>
+        ///  Builds a `CEffect` backed by a C# `process` callback. The returned pointer
+        ///  can be attached to a track with `track_builder_add_effect`, or freed with
+        ///  `destroy_ceffect` if it is never attached.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "create_managed_effect", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void* create_managed_effect(delegate* unmanaged[Cdecl]<void*, float*, void> process, delegate* unmanaged[Cdecl]<void*, uint, void> init, void* user_data);
+
         [DllImport(__DllName, EntryPoint = "create_reverb_builder", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern void* create_reverb_builder(double feedback, double damping, double stereo_width, double mix);
 
@@ -140,7 +252,7 @@ namespace KiraSharp.Generated
         internal static extern void* create_reverb_builder_default();
 
         [DllImport(__DllName, EntryPoint = "destroy_reverb_builder", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        internal static extern void destroy_reverb_builder(void* reverb_handle_pointer);
+        internal static extern void destroy_reverb_builder(void* reverb_builder_pointer);
 
         [DllImport(__DllName, EntryPoint = "reverb_builder_feedback", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern void reverb_builder_feedback(void* reverb_pointer, double feedback);
