@@ -1,5 +1,5 @@
 ﻿namespace KiraSharp.Sound;
-public interface ISound {
+public interface ISound : IDisposable {
     public void Resume(Tween tween);
     public void Pause(Tween tween);
     public void Stop(Tween tween);

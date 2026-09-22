@@ -22,11 +22,14 @@ public class ReverbEffect : Effect {
         }
         Handle = FFI.reverb_build(builder);
     }
-    unsafe ~ReverbEffect() {
+    protected override unsafe void ReleaseHandle() {
+        // Once attached to a track (IsBuilt), Handle is the ReverbHandle returned
+        // by track_builder_add_effect. Before that, Handle is the CEffect produced
+        // by reverb_build, which owns both the boxed effect and its handle.
         if(IsBuilt) {
-             FFI.destroy_reverb_handle(Handle);
+            FFI.destroy_reverb_handle(Handle);
         } else {
-            FFI.destroy_reverb_builder(Handle);
+            FFI.destroy_ceffect(Handle);
         }
     }
     public unsafe void SetFeedback(double feedback, Tween tween) => FFI.reverb_feedback(Handle, feedback, tween.CreateHandle());

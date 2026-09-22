@@ -1,12 +1,12 @@
 ﻿using KiraSharp.Generated;
 
 namespace KiraSharp.Sound;
-public class StaticSound : ISound {
+public class StaticSound : NativeResource, ISound {
     internal unsafe void* Handle;
     internal unsafe StaticSound(void* handle) {
         this.Handle = handle;
     }
-    unsafe ~StaticSound() {
+    protected override unsafe void ReleaseHandle() {
         FFI.destroy_static_sound_handle(Handle);
     }
 

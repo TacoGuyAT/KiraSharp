@@ -2,7 +2,7 @@
 using KiraSharp.Generated;
 
 namespace KiraSharp;
-public class Track {
+public class Track : NativeResource {
     public unsafe void* Handle { get; protected internal set; }
     public bool IsBuilt { get; internal set; }
     public readonly IEnumerable<Effect>? Effects;
@@ -34,11 +34,13 @@ public class Track {
             Effects = effects;
         }
     }
-    unsafe ~Track() {
+    protected override unsafe void ReleaseHandle() {
         if(!IsBuilt) {
             FFI.destroy_track_builder(Handle);
         } else {
-            // TODO: destroy track handle
+            // Dropping the TrackHandle removes the sub-track from the mixer, so a
+            // Track must outlive the sounds routed to it.
+            FFI.destroy_track_handle(Handle);
         }
     }
 
@@ -67,6 +69,7 @@ public class Track {
             throw new Exception("Adding built effects to track is unsupported. See https://github.com/tesselode/kira/issues/99");
         }
         effect.Handle = FFI.track_builder_add_effect(Handle, effect.Handle);
+        effect.IsBuilt = true;
     }
     public void GetEffect<T>(int index, out T? effect) where T : Effect {
         if(Effects is not null && Effects.Count() > index && Effects.ElementAt(index) is T result) {
