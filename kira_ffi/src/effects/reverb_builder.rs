@@ -1,5 +1,5 @@
-use crate::CEffect;
-use kira::effect::reverb::{ReverbBuilder, ReverbHandle};
+use crate::{destroy_reverb_handle, CEffect};
+use kira::effect::reverb::ReverbBuilder;
 use kira::effect::EffectBuilder;
 use std::ffi::c_void;
 use std::mem;
@@ -20,9 +20,9 @@ pub unsafe extern "C" fn create_reverb_builder_default() -> *mut c_void {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn destroy_reverb_builder(reverb_handle_pointer: *mut c_void) {
-    let reverb_handle = Box::from_raw(reverb_handle_pointer as *mut ReverbHandle);
-    drop(reverb_handle);
+pub unsafe extern "C" fn destroy_reverb_builder(reverb_builder_pointer: *mut c_void) {
+    let reverb_builder = Box::from_raw(reverb_builder_pointer as *mut ReverbBuilder);
+    drop(reverb_builder);
 }
 
 #[no_mangle]
@@ -59,6 +59,7 @@ pub unsafe extern "C" fn reverb_build(reverb_pointer: *mut c_void) -> *mut c_voi
     let (effect, handle) = reverb.build();
     Box::into_raw(Box::new(CEffect::new(
         effect,
-        Box::into_raw(Box::new(handle)) as *mut c_void
+        Box::into_raw(Box::new(handle)) as *mut c_void,
+        destroy_reverb_handle,
     ))) as *mut c_void
 }

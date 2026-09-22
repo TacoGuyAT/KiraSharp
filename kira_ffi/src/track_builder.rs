@@ -33,6 +33,7 @@ pub unsafe extern "C" fn track_builder_add_effect(builder_ptr: *mut c_void, ceff
     let CEffect {
         effect,
         handle,
+        ..
     } = *effect;
     builder.add_built_effect(effect);
     mem::forget(builder);

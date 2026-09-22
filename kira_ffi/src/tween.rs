@@ -1,4 +1,5 @@
 use std::ffi::c_void;
+use std::mem;
 use std::time::Duration;
 use kira::StartTime;
 use kira::tween::{Easing, Tween};
@@ -29,6 +30,7 @@ pub unsafe extern "C" fn tween_start_time(tween_ptr: *mut c_void, start_time_ptr
     let mut tween = Box::from_raw(tween_ptr as *mut Tween);
     let start_time = Box::from_raw(start_time_ptr as *mut StartTime);
     tween.start_time = *start_time;
+    mem::forget(tween);
 }
 
 #[no_mangle]
@@ -36,11 +38,13 @@ pub unsafe extern "C" fn tween_duration(tween_ptr: *mut c_void, duration_ptr: *m
     let mut tween = Box::from_raw(tween_ptr as *mut Tween);
     let duration = Box::from_raw(duration_ptr as *mut Duration);
     tween.duration = *duration;
+    mem::forget(tween);
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn tween_easing(tween_ptr: *mut c_void, easing_ptr: *mut c_void) {
     let mut tween = Box::from_raw(tween_ptr as *mut Tween);
     let easing = *Box::from_raw(easing_ptr as *mut Easing);
-    tween.easing = easing.clone();
+    tween.easing = easing;
+    mem::forget(tween);
 }
