@@ -42,3 +42,13 @@ pub unsafe extern "C" fn static_sound_handle_set_volume(static_sound_handle_ptr:
     static_sound_handle.set_volume(volume, tween);
     mem::forget(static_sound_handle);
 }
+
+/// Panning: 0.0 = hard left, 0.5 = center, 1.0 = hard right. Smoothly
+/// interpolated by the given tween.
+#[no_mangle]
+pub unsafe extern "C" fn static_sound_handle_set_panning(static_sound_handle_ptr: *mut c_void, panning: f64, tween_ptr: *mut c_void) {
+    let mut static_sound_handle = Box::from_raw(static_sound_handle_ptr as *mut StaticSoundHandle);
+    let tween = *Box::from_raw(tween_ptr as *mut Tween);
+    static_sound_handle.set_panning(panning, tween);
+    mem::forget(static_sound_handle);
+}
