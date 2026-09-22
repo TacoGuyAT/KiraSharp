@@ -6,38 +6,42 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     
-    <RuntimeIdentifiers Condition="$([MSBuild]::IsOSPlatform('Windows')) AND $([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture) == 'x64'">win-x64</RuntimeIdentifiers>
-    <RuntimeIdentifiers Condition="$([MSBuild]::IsOSPlatform('Linux')) AND $([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture) == 'x64'">linux-x64</RuntimeIdentifiers>
+    <RuntimeIdentifier Condition="$([MSBuild]::IsOSPlatform('Windows')) AND $([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture) == 'x64'">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="$([MSBuild]::IsOSPlatform('Linux')) AND $([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture) == 'x64'">linux-x64</RuntimeIdentifier>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <IsRelease Condition="'$(Configuration)'=='Debug'"></IsRelease>
-    <IsRelease Condition="'$(Configuration)'=='Release'">--release</IsRelease>
-    
-    <NativeTarget Condition="'$(RuntimeIdentifiers)' == 'win-x64'">x86_64-pc-windows-msvc</NativeTarget>
-    <NativeTarget Condition="'$(RuntimeIdentifiers)' == 'linux-x64'">x86_64-unknown-linux-gnu</NativeTarget>
-    
-    <Profile Condition="'$(Configuration)'=='Debug'">debug</Profile>
-    <Profile Condition="'$(Configuration)'=='Release'">release</Profile>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <IsRelease></IsRelease>
+    <Profile>debug</Profile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <IsRelease>--release</IsRelease>
+    <Profile>release</Profile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
+    <NativeTarget>x86_64-pc-windows-msvc</NativeTarget>
+    <LibName>kira_ffi.dll</LibName>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
+    <NativeTarget>x86_64-unknown-linux-gnu</NativeTarget>
+    <LibName>libkira_ffi.so</LibName>    
   </PropertyGroup>
 
   <Target Name="BuildNative" BeforeTargets="BeforeBuild">
-    <Exec Command="cargo build $(IsRelease) --target $(NativeTarget)" WorkingDirectory="../kira_ffi" />
-
-    <ItemGroup>
-      <None Include="../kira_ffi/target/$(NativeTarget)/$(Profile)/kira_ffi.dll" Condition="'$(RuntimeIdentifiers)' == 'win-x64'">
-        <Pack>true</Pack>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        <PackagePath>runtimes/win-x64/native/kira_ffi.dll</PackagePath>
-        <Link>kira_ffi.dll</Link>
-      </None>
-      <None Include="../kira_ffi/target/$(NativeTarget)/$(Profile)/libkira_ffi.so" Condition="'$(RuntimeIdentifiers)' == 'linux-x64'">
-        <Pack>true</Pack>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        <PackagePath>runtimes/win-x64/native/libkira_ffi.so</PackagePath>
-        <Link>libkira_ffi.so</Link>
-      </None>
-    </ItemGroup>
+    <Exec Command="cargo build $(IsRelease) --target $(NativeTarget)" WorkingDirectory="../kira_ffi" EnvironmentVariables="CARGO_TARGET_DIR=../kira_ffi/target" />
   </Target>
+
+  <ItemGroup>
+    <Content Include="build/KiraSharp.targets" Pack="true" PackagePath="build/" />
+    <Content Include="../kira_ffi/target/$(NativeTarget)/$(Profile)/$(LibName)">
+      <Pack>true</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>runtimes/$(RuntimeIdentifier)/native/$(LibName)</PackagePath>
+      <Link>$(LibName)</Link>
+    </Content>
+  </ItemGroup>
 
 </Project>

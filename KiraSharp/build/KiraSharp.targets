@@ -1,0 +1,14 @@
+﻿<Project>
+  <ItemGroup>
+    <NativeLibraryToPublish
+      Include="$(MSBuildThisFileDirectory)../runtimes/$(RuntimeIdentifier)/native/*"
+      Condition="'$(RuntimeIdentifier)' != ''" />
+  </ItemGroup>
+
+  <Target Name="CopyKiraFfiNative" AfterTargets="ResolveAssemblyReferences">
+    <Copy
+      SourceFiles="@(NativeLibraryToPublish)"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="true" />
+  </Target>
+</Project>
