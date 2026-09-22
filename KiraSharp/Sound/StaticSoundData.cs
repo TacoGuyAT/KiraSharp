@@ -17,7 +17,17 @@ public struct StaticSoundData : ISoundData
         }
         else
         {
-            handle = FFI.create_static_sound_data_from_path((byte*)Marshal.StringToHGlobalAnsi(path));
+            // Rust only borrows the string (via CStr) for the duration of the
+            // call, so free the unmanaged copy as soon as it returns.
+            IntPtr pathPtr = Marshal.StringToHGlobalAnsi(path);
+            try
+            {
+                handle = FFI.create_static_sound_data_from_path((byte*)pathPtr);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(pathPtr);
+            }
         }
         if (volume is double v)
         {
