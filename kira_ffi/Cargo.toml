@@ -11,6 +11,8 @@ csbindgen = ["dep:csbindgen"]
 
 [dependencies]
 kira = { version = "0.9.6" }
+symphonia = { version = "0.5", default-features = false }
+ringbuf = "0.3"
 
 [build-dependencies]
 csbindgen = { version = "1.9.3", optional = true }

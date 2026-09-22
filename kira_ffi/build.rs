@@ -19,6 +19,8 @@ fn csbindgen() {
         .input_extern_file("src/tween.rs")
         .input_extern_file("src/sound/static_sound_data.rs")
         .input_extern_file("src/sound/static_sound_handle.rs")
+        .input_extern_file("src/sound/streaming_sound_data.rs")
+        .input_extern_file("src/sound/pcm_stream.rs")
         .input_extern_file("src/effects/mod.rs")
         .input_extern_file("src/effects/reverb_builder.rs")
         .input_extern_file("src/effects/reverb_handle.rs")
